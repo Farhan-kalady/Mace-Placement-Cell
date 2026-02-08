@@ -10,20 +10,24 @@ app.use(express.json());
 
 // MySQL connection
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "mace_placement"
+  host: process.env.DB_HOST || "b6wxttxassl9oxsyp2cu-mysql.services.clever-cloud.com",
+  user: process.env.DB_USER || "ul0ziut2erumjaw7",
+  password: process.env.DB_PASSWORD || "0QKU983IBI6SpqRjGEkl",
+  database: process.env.DB_NAME || "b6wxttxassl9oxsyp2cu",
+  port: process.env.DB_PORT || 3306
 });
 
 // Test connection
 db.connect(err => {
-  if (err) throw err;
+  if (err) {
+    console.error("Database connection failed:", err.message);
+    return;
+  }
   console.log("MySQL Connected");
 });
 
 // Signup API
-app.post("/signup", async (req, res) => {
+app.post("/api/signup", async (req, res) => {
   const { name, email, password } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -38,7 +42,7 @@ app.post("/signup", async (req, res) => {
 });
 
 // Login API
-app.post("/login", (req, res) => {
+app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
   const sql = "SELECT * FROM users WHERE email = ?";
@@ -55,8 +59,17 @@ app.post("/login", (req, res) => {
     if (!isMatch)
       return res.status(401).json({ message: "Wrong Password" });
 
-    res.json({ message: "Login Success", user });
+    // Use JWT secret from env
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET || "secretkey", { expiresIn: "1h" });
+    res.json({ message: "Login Success", token, user: { id: user.id, name: user.name, email: user.email } });
   });
 });
 
-app.listen(5000, () => console.log("Server running on http://localhost:5000"));
+// Export for Vercel
+export default app;
+
+// Keep listen for local development
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+}
