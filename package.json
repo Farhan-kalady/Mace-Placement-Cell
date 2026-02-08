@@ -6,7 +6,7 @@
         "my-app"
     ],
     "scripts": {
-        "build": "npm install --workspace=my-app && npm run build --workspace=my-app && mv my-app/dist ./dist"
+        "build": "npm install --workspace=my-app && npm run build --workspace=my-app && mv my-app/dist ./public"
     },
     "dependencies": {
         "bcryptjs": "^3.0.3",
