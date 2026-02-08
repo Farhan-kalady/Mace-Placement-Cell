@@ -6,9 +6,6 @@
             "destination": "backend/server.js"
         },
         {
-            "handle": "filesystem"
-        },
-        {
             "source": "/(.*)",
             "destination": "my-app/index.html"
         }
