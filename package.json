@@ -2,8 +2,11 @@
     "name": "mace-placement-cell-root",
     "version": "1.0.0",
     "type": "module",
+    "workspaces": [
+        "my-app"
+    ],
     "scripts": {
-        "build": "cd my-app && npm install && npm run build && cd .. && mv my-app/dist ./dist"
+        "build": "npm install --workspace=my-app && npm run build --workspace=my-app && mv my-app/dist ./dist"
     },
     "dependencies": {
         "bcryptjs": "^3.0.3",
